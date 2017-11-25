@@ -121,15 +121,17 @@ def print_location_tree(loc_id,depth,device_flag):
       print_location_tree(str(x),depth+1,device_flag)
 
 def print_help():
-   print("oc_loc_mgmt.py -u <user> -t <token> [-c printTree | listDevices | moveDevices | removeDevice | renameLoc | deleteLoc] [-l <loc-id>] [-d <dev-id>] [-n  'name']" )
+   print("oc_loc_mgmt.py -u <user> -t <token> [-c printTree | listDevices | moveDevice | removeDevice | renameLoc | deleteLoc] [-l <loc-id>] [-d <dev-id>] [-n  'name']" )
    print("\tprintTree\t Prints the location tree")
    print("\tlistDevices\t List all devices at a location. Requires \"-l <loc-id>\" parameter")
-   print("\tmoveDevices\t Move a device to a new location. Requires  \"-l <loc-id> -d <dev-id>\" parameters")
+   print("\tmoveDevice\t Move a device to a new location. Requires  \"-l <loc-id> -d <dev-id>\" parameters")
    print("\tremoveDevice\t Remove a device from the location tree. Requires  \"-d <dev-id>\" parameter")
    print("\trenameLoc\t Rename a location in the tree. Requires  \"-l <loc-id> -n <name>\" parameter")
    print("\tdeleteLoc\t Delete a location from the tree. Requires  \"-l <loc-id>\" parameter")
+   print("\nExample of running in interactive mode:\n\tpython oc_loc_mgmt.py -u user -t a6gyLVVXkaaa4JaYoStabALAaQl5RIK")
    print("\nExample of listing devices at a location:\n\tpython oc_loc_mgmt.py -u user -t a6gyLVVXkaaa4JaYoStabALAaQl5RIK -c listDevices -l 59307e0b7d6ec25f901d96c1")
    print("\nExample of renaming a location:\n\tpython oc_loc_mgmt.py -u user -t a6gyLVVXkaaa4JaYoStabALAaQl5RIK -c renameLoc -l 59307e04556ec25f901d96c1 -n \"my new location\"")
+   print("\nExample of moving a device to a new location:\n\tpython oc_loc_mgmt.py -u user -t a6gyLVVXkaaa4JaYoStabALAaQl5RIK -c moveDevice -d 59fb644aaaa0cf7055615d9a -l 59307e04556ec25f901d96c1 ")
    sys.exit()
 
 # This is the main part of the program that is called below.
@@ -175,11 +177,11 @@ def main(argv):
       print_location_tree('',0,False)
    elif clt_mode=='listDevices':
       print_devices(clt_loc_id,0)
-   elif clt_mode=='moveDevices':
-       move_devices(clt_device_id,clt_loc_id)
+   elif clt_mode=='moveDevice':
+       move_devices(clt_dev_id,clt_loc_id)
    # Remove device simply reassigns the location to 0
    elif clt_mode=='removeDevice':
-       move_devices(device_id,'000000000000000000000000')
+       move_devices(clt_dev_id,'000000000000000000000000')
    elif clt_mode=='renameLoc':
        rename_location(clt_loc_id,clt_name)
    elif clt_mode=='deleteLoc':
