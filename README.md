@@ -1,14 +1,13 @@
-# location_mgmt
-Python command line location tree manager
-
-This program allows users with developer role to manipulate the location tree.
-  
+# Location Tree Manager
+Python command line location tree manager that allows users with developer role to manipulate the location tree.
+ 
+``` 
 python oc_loc_mgmt.py -h
 oc_loc_mgmt.py -u <user> -t <token>
-
+```
 
 You can get your user id and token under the "My Profile" tab on the web page that appears when you click on your name in the upper right.
-
+```
 Example Output:
 python oc_loc_mgmt.py -u user -t a6gyLVaXkKUU4JaYoSaCbAaAaQl5RI
 "root" (59092f3d357344172464b270)
@@ -44,3 +43,4 @@ Menu Options:
 6) Print location tree with devices (warning, slow!)
 7) Exit
 :
+```
