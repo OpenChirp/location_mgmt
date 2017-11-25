@@ -6,6 +6,21 @@ from pprint import pprint
 user = ''
 token = ''
 
+# This function deletes a location 
+#     loc_id is a string representing the location ID
+# This function will exit upon error
+def delete_location(loc_id):
+   url='http://openchirp.andrew.cmu.edu:7000/api/location/'+loc_id
+   global user
+   global token
+   check = input( "Are you sure you want to delete?  Type 'y' for yes: " )
+   if check=='y':
+      response = requests.delete(url,  auth=(user, token ))
+      if response.status_code!=200:
+         print("Error connecting: {}".format(response.status_code))
+         sys.exit()
+
+
 
 # This function makes a put request to change a location's name
 #     loc_id is a string representing the location ID
@@ -126,7 +141,7 @@ def main(argv):
    print_location_tree('',0,False)
 
    while True:
-      print("\n\nMenu Options:\n1) Print Location Tree\n2) List Devices at Location (requires: location_id)\n3) Move device (requires: device_id, location_id)\n4) Remove device from tree (requires: device_id)\n5) Rename Location (requires: location_id)\n6) Print location tree with devices (warning, slow!)\n7) Exit" );
+      print("\n\nMenu Options:\n1) Print Location Tree\n2) List Devices at Location (requires: location_id)\n3) Move device (requires: device_id, location_id)\n4) Remove device from tree (requires: device_id)\n5) Rename Location (requires: location_id)\n6) Print location tree with devices (warning, slow!)\n7) Delete Location\n8) Exit" );
       menu_option = input(': ')
       if menu_option=='1':
          print_location_tree('',0,False) 
@@ -147,6 +162,9 @@ def main(argv):
       if menu_option=='6':
          print_location_tree('',0,True) 
       if menu_option=='7':
+         loc_id=input('Enter location id: ')
+         delete_location(loc_id) 
+      if menu_option=='8':
          break 
 
    print( "Good Bye" )

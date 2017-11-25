@@ -33,7 +33,6 @@ python oc_loc_mgmt.py -u user -t a6gyLVaXkKUU4JaYoSaCbAaAaQl5RI
                         "Artur's" (59fb6449f230cf7055615d9a)
                         "Agr's House" (5a121c7bea6c865841d1cd46)
 
-
 Menu Options:
 1) Print Location Tree
 2) List Devices at Location (requires: location_id)
@@ -41,6 +40,7 @@ Menu Options:
 4) Remove device from tree (requires: device_id)
 5) Rename Location (requires: location_id)
 6) Print location tree with devices (warning, slow!)
-7) Exit
+7) Delete Location
+8) Exit
 :
 ```
