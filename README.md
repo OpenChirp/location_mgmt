@@ -48,17 +48,23 @@ Menu Options:
 # Command Line Options
 ```
 $ python oc_loc_mgmt.py -h
-oc_loc_mgmt.py -u <user> -t <token> [-c printTree | listDevices | moveDevices | removeDevice | renameLoc | deleteLoc] [-l <loc-id>] [-d <dev-id>] [-n  'name']
+oc_loc_mgmt.py -u <user> -t <token> [-c printTree | listDevices | moveDevice | removeDevice | renameLoc | deleteLoc] [-l <loc-id>] [-d <dev-id>] [-n  'name']
 	printTree	 Prints the location tree
 	listDevices	 List all devices at a location. Requires "-l <loc-id>" parameter
-	moveDevices	 Move a device to a new location. Requires  "-l <loc-id> -d <dev-id>" parameters
+	moveDevice	 Move a device to a new location. Requires  "-l <loc-id> -d <dev-id>" parameters
 	removeDevice	 Remove a device from the location tree. Requires  "-d <dev-id>" parameter
 	renameLoc	 Rename a location in the tree. Requires  "-l <loc-id> -n <name>" parameter
 	deleteLoc	 Delete a location from the tree. Requires  "-l <loc-id>" parameter
+
+Example of running in interactive mode:
+	python oc_loc_mgmt.py -u user -t a6gyLVVXkaaa4JaYoStabALAaQl5RIK
 
 Example of listing devices at a location:
 	python oc_loc_mgmt.py -u user -t a6gyLVVXkaaa4JaYoStabALAaQl5RIK -c listDevices -l 59307e0b7d6ec25f901d96c1
 
 Example of renaming a location:
 	python oc_loc_mgmt.py -u user -t a6gyLVVXkaaa4JaYoStabALAaQl5RIK -c renameLoc -l 59307e04556ec25f901d96c1 -n "my new location"
+
+Example of moving a device to a new location:
+	python oc_loc_mgmt.py -u user -t a6gyLVVXkaaa4JaYoStabALAaQl5RIK -c moveDevice -d 59fb644aaaa0cf7055615d9a -l 59307e04556ec25f901d96c1 
 ```
