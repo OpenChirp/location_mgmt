@@ -3,6 +3,8 @@ import sys, getopt
 import json
 from pprint import pprint
 
+
+# Set these globals based on the command line tool parsing
 user = ''
 token = ''
 
@@ -118,25 +120,73 @@ def print_location_tree(loc_id,depth,device_flag):
    for x in children:
       print_location_tree(str(x),depth+1,device_flag)
 
+def print_help():
+   print("oc_loc_mgmt.py -u <user> -t <token> [-c printTree | listDevices | moveDevices | removeDevice | renameLoc | deleteLoc] [-l <loc-id>] [-d <dev-id>] [-n  'name']" )
+   print("\tprintTree\t Prints the location tree")
+   print("\tlistDevices\t List all devices at a location. Requires \"-l <loc-id>\" parameter")
+   print("\tmoveDevices\t Move a device to a new location. Requires  \"-l <loc-id> -d <dev-id>\" parameters")
+   print("\tremoveDevice\t Remove a device from the location tree. Requires  \"-d <dev-id>\" parameter")
+   print("\trenameLoc\t Rename a location in the tree. Requires  \"-l <loc-id> -n <name>\" parameter")
+   print("\tdeleteLoc\t Delete a location from the tree. Requires  \"-l <loc-id>\" parameter")
+   print("\nExample of listing devices at a location:\n\tpython oc_loc_mgmt.py -u user -t a6gyLVVXkaaa4JaYoStabALAaQl5RIK -c listDevices -l 59307e0b7d6ec25f901d96c1")
+   print("\nExample of renaming a location:\n\tpython oc_loc_mgmt.py -u user -t a6gyLVVXkaaa4JaYoStabALAaQl5RIK -c renameLoc -l 59307e04556ec25f901d96c1 -n \"my new location\"")
+   sys.exit()
 
 # This is the main part of the program that is called below.
 # It handles the menu and grabs the user name and token from the commandline
 def main(argv):
    global user
    global token
+
+   clt_loc_id = ''
+   clt_dev_id = '' 
+   clt_name = ''
+   # Default the command line tool to interactive mode
+   clt_mode= 'interactive'
+
    try:
-      opts, args = getopt.getopt(argv,"hu:t:",["user=","token="])
+      opts, args = getopt.getopt(argv,"hu:t:c:l:d:n:",["user=","token=","command=","loc=","dev=","name="])
    except getopt.GetoptError:
-      print( "oc_loc_mgmt.py -u <user> -t <token>" )
+      print_help()
       sys.exit(2)
+
    for opt, arg in opts:
       if opt == '-h':
-         print("oc_loc_mgmt.py -u <user> -t <token>" )
-         sys.exit()
+         print_help()
       elif opt in ("-u", "--user"):
          user = arg
       elif opt in ("-t", "--token"):
          token = arg
+      elif opt in ("-c","--command"):
+         clt_mode = arg 
+      elif opt in ("-l","--loc"):
+         clt_loc_id =  arg 
+      elif opt in ("-d","--dev"):
+         clt_dev_id =  arg 
+      elif opt in ("-n","--name"):
+         clt_name =  arg 
+
+
+#   print( "mode {}\nloc {}\ndev {}\nname {}".format(clt_mode,clt_loc_id,clt_dev_id,clt_name))
+   if user=='' or token=='':
+      print_help()
+
+   if clt_mode=='printTree':
+      print_location_tree('',0,False)
+   elif clt_mode=='listDevices':
+      print_devices(clt_loc_id,0)
+   elif clt_mode=='moveDevices':
+       move_devices(clt_device_id,clt_loc_id)
+   # Remove device simply reassigns the location to 0
+   elif clt_mode=='removeDevice':
+       move_devices(device_id,'000000000000000000000000')
+   elif clt_mode=='renameLoc':
+       rename_location(clt_loc_id,clt_name)
+   elif clt_mode=='deleteLoc':
+       delete_location(clt_loc_id) 
+   
+   if clt_mode!='interactive':
+      sys.exit(0) 
 
    print_location_tree('',0,False)
 
