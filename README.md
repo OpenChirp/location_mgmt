@@ -41,20 +41,23 @@ Menu Options:
 5) Rename Location (requires: location_id)
 6) Print location tree with devices (warning, slow!)
 7) Delete Location
-8) Exit
-:
+8) List My Devices
+9) Create Location
+10) Exit
 ```
 
 # Command Line Options
 ```
 $ python oc_loc_mgmt.py -h
-oc_loc_mgmt.py -u <user> -t <token> [-c printTree | listDevices | moveDevice | removeDevice | renameLoc | deleteLoc] [-l <loc-id>] [-d <dev-id>] [-n  'name']
+oc_loc_mgmt.py -u <user> -t <token> [-c printTree | listDevices | moveDevice | removeDevice | renameLoc | deleteLoc | myDevices | createLocation ] [-l <loc-id>] [-d <dev-id>] [-n  'name'][-s 'BUILDING | INDOOR'] [-g lat lon]
 	printTree	 Prints the location tree
 	listDevices	 List all devices at a location. Requires "-l <loc-id>" parameter
 	moveDevice	 Move a device to a new location. Requires  "-l <loc-id> -d <dev-id>" parameters
 	removeDevice	 Remove a device from the location tree. Requires  "-d <dev-id>" parameter
 	renameLoc	 Rename a location in the tree. Requires  "-l <loc-id> -n <name>" parameter
 	deleteLoc	 Delete a location from the tree. Requires  "-l <loc-id>" parameter
+	myDevices	 List all of the current user's devices" parameter
+	createLocation	 Create a new location "-l <parent-id> -n <name> -s <BUILDING | INDOOR> [-g <lat lon>] " parameters
 
 Example of running in interactive mode:
 	python oc_loc_mgmt.py -u user -t a6gyLVVXkaaa4JaYoStabALAaQl5RIK

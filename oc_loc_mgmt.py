@@ -7,6 +7,7 @@ from pprint import pprint
 # Set these globals based on the command line tool parsing
 user = ''
 token = ''
+server_prefix = "http://openchirp.andrew.cmu.edu:7000"
 
 # This function deletes a location 
 #     loc_id is a string representing the location ID
@@ -29,9 +30,10 @@ def delete_location(loc_id):
 #     name is a string representing the new name for the location
 # This function will exit upon error
 def rename_location(loc_id,name):
-   url='http://openchirp.andrew.cmu.edu:7000/api/location/'+loc_id
    global user
    global token
+   global server_prefix
+   url=server_prefix + '/api/location/'+loc_id
    data = {'name': name}
    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
    response = requests.put(url, data=json.dumps(data), headers=headers, auth=(user, token ))
@@ -46,7 +48,8 @@ def rename_location(loc_id,name):
 #     loc_id is a string representing the location ID
 # This function will exit upon error
 def move_devices(dev_id,loc_id):
-   url='http://openchirp.andrew.cmu.edu:7000/api/device/'+dev_id
+   global server_prefix
+   url=server_prefix + '/api/device/'+dev_id
    global user
    global token
    data = {'location_id': loc_id}
@@ -57,13 +60,38 @@ def move_devices(dev_id,loc_id):
       sys.exit()
 
  
+# This function prints the user's devices 
+def print_myDevices():
+   global server_prefix
+   url=server_prefix + '/api/user/mydevices'
+   global user
+   global token
+   response = requests.get(url, auth=(user, token ))
+   if response.status_code!=200:
+      print("Error connecting: {}".format(response.status_code))
+      sys.exit()
+   
+   # not sure the best way to get raw json text, but this seems to work
+   raw_json=response.text
+
+   parsed_json=json.loads(raw_json)
+   
+   print( "My Devices:")
+   if len(parsed_json)==0:
+      print( "\tNo devices")
+   # iterate through all of the returned json elements
+   for i in range(0,len(parsed_json)):
+       print("\"{}\" ({})".format(parsed_json[i]['name'],parsed_json[i]['id'] ))
+
+
 
 # This function makes a get request to return all devices at a location 
 #     loc_id is a string representing the location ID
 #     depth is used for printing tabs correctly when needed
 # This function will exit upon error
 def print_devices(loc_id,depth):
-   url='http://openchirp.andrew.cmu.edu:7000/api/location/'+loc_id+'/devices'
+   global server_prefix
+   url=server_prefix + '/api/location/'+loc_id+'/devices'
    global user
    global token
    response = requests.get(url, auth=(user, token ))
@@ -97,7 +125,8 @@ def print_devices(loc_id,depth):
 #     depth is a recursion counter used for printing tabs
 # This function will exit upon error
 def print_location_tree(loc_id,depth,device_flag):
-   url='http://openchirp.andrew.cmu.edu:7000/api/location/'+loc_id
+   global server_prefix
+   url=server_prefix + '/api/location/'+loc_id
    global user
    global token
    response = requests.get(url, auth=(user, token ))
@@ -120,14 +149,35 @@ def print_location_tree(loc_id,depth,device_flag):
    for x in children:
       print_location_tree(str(x),depth+1,device_flag)
 
+
+def create_location(loc_id,name,building_type,gps_lat, gps_lon):
+   global user
+   global token
+   global server_prefix
+   url=server_prefix + '/api/location/'+loc_id
+   if gps_lat=='' or gps_lon=='':
+      data = {'name': name, 'type' : building_type}
+   else:
+      data = {'name': name, 'type' : building_type, 'geo_loc' : {'coordinates' : [float(gps_lat) , float(gps_lon)]} }
+   headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+   response = requests.post(url, data=json.dumps(data), headers=headers, auth=(user, token ))
+   if response.status_code!=200:
+      print("Error connecting: {}".format(response.status_code))
+      sys.exit()
+
+
+
+
 def print_help():
-   print("oc_loc_mgmt.py -u <user> -t <token> [-c printTree | listDevices | moveDevice | removeDevice | renameLoc | deleteLoc] [-l <loc-id>] [-d <dev-id>] [-n  'name']" )
+   print("oc_loc_mgmt.py -u <user> -t <token> [-c printTree | listDevices | moveDevice | removeDevice | renameLoc | deleteLoc | myDevices | createLocation ] [-l <loc-id>] [-d <dev-id>] [-n  'name'][-s 'BUILDING | INDOOR'] [-g lat lon]" )
    print("\tprintTree\t Prints the location tree")
    print("\tlistDevices\t List all devices at a location. Requires \"-l <loc-id>\" parameter")
    print("\tmoveDevice\t Move a device to a new location. Requires  \"-l <loc-id> -d <dev-id>\" parameters")
    print("\tremoveDevice\t Remove a device from the location tree. Requires  \"-d <dev-id>\" parameter")
    print("\trenameLoc\t Rename a location in the tree. Requires  \"-l <loc-id> -n <name>\" parameter")
    print("\tdeleteLoc\t Delete a location from the tree. Requires  \"-l <loc-id>\" parameter")
+   print("\tmyDevices\t List all of the current user's devices\" parameter")
+   print("\tcreateLocation\t Create a new location \"-l <parent-id> -n <name> -s <BUILDING | INDOOR> [-g <lat lon>] \" parameters")
    print("\nExample of running in interactive mode:\n\tpython oc_loc_mgmt.py -u user -t a6gyLVVXkaaa4JaYoStabALAaQl5RIK")
    print("\nExample of listing devices at a location:\n\tpython oc_loc_mgmt.py -u user -t a6gyLVVXkaaa4JaYoStabALAaQl5RIK -c listDevices -l 59307e0b7d6ec25f901d96c1")
    print("\nExample of renaming a location:\n\tpython oc_loc_mgmt.py -u user -t a6gyLVVXkaaa4JaYoStabALAaQl5RIK -c renameLoc -l 59307e04556ec25f901d96c1 -n \"my new location\"")
@@ -143,11 +193,15 @@ def main(argv):
    clt_loc_id = ''
    clt_dev_id = '' 
    clt_name = ''
+   clt_type= ''
+   clt_lat= ''
+   clt_lon= ''
+
    # Default the command line tool to interactive mode
    clt_mode= 'interactive'
 
    try:
-      opts, args = getopt.getopt(argv,"hu:t:c:l:d:n:",["user=","token=","command=","loc=","dev=","name="])
+      opts, args = getopt.getopt(argv,"hu:t:c:l:d:n:s:g::",["user=","token=","command=","loc=","dev=","name="])
    except getopt.GetoptError:
       print_help()
       sys.exit(2)
@@ -167,6 +221,11 @@ def main(argv):
          clt_dev_id =  arg 
       elif opt in ("-n","--name"):
          clt_name =  arg 
+      elif opt in ("-s","--space"):
+         clt_type =  arg 
+      elif opt in ("-g","--gps"):
+         clt_lat =  arg[0] 
+         clt_lon =  arg[1] 
 
 
 #   print( "mode {}\nloc {}\ndev {}\nname {}".format(clt_mode,clt_loc_id,clt_dev_id,clt_name))
@@ -186,6 +245,12 @@ def main(argv):
        rename_location(clt_loc_id,clt_name)
    elif clt_mode=='deleteLoc':
        delete_location(clt_loc_id) 
+   elif clt_mode=='myDevices':
+       print_myDevices()
+   elif clt_mode=='createLocation':
+       if((clt_loc_id=='') or (clt_name=='') or (clt_type=='') ):
+          print_help()
+       create_location(clt_loc_id, clt_name,clt_type,clt_lat,clt_lon)
    
    if clt_mode!='interactive':
       sys.exit(0) 
@@ -193,7 +258,7 @@ def main(argv):
    print_location_tree('',0,False)
 
    while True:
-      print("\n\nMenu Options:\n1) Print Location Tree\n2) List Devices at Location (requires: location_id)\n3) Move device (requires: device_id, location_id)\n4) Remove device from tree (requires: device_id)\n5) Rename Location (requires: location_id)\n6) Print location tree with devices (warning, slow!)\n7) Delete Location\n8) Exit" );
+      print("\n\nMenu Options:\n1) Print Location Tree\n2) List Devices at Location (requires: location_id)\n3) Move device (requires: device_id, location_id)\n4) Remove device from tree (requires: device_id)\n5) Rename Location (requires: location_id)\n6) Print location tree with devices (warning, slow!)\n7) Delete Location\n8) List My Devices\n9) Create Location\n10) Exit" );
       menu_option = input(': ')
       if menu_option=='1':
          print_location_tree('',0,False) 
@@ -217,6 +282,15 @@ def main(argv):
          loc_id=input('Enter location id: ')
          delete_location(loc_id) 
       if menu_option=='8':
+         print_myDevices() 
+      if menu_option=='9':
+         loc_id=input("Enter patent location ID: " )
+         name=input('Enter new location name: ')
+         building_type=input('Enter type [BUILDING or INDOOR]: ')
+         gps_lat=input('Enter Latitude: ')
+         gps_lon=input('Enter Longitude: ')
+         create_location(loc_id,name,building_type,gps_lat, gps_lon) 
+      if menu_option=='10':
          break 
 
    print( "Good Bye" )
