@@ -258,7 +258,7 @@ def main(argv):
    print_location_tree('',0,False)
 
    while True:
-      print("\n\nMenu Options:\n1) Print Location Tree\n2) List Devices at Location (requires: location_id)\n3) Move device (requires: device_id, location_id)\n4) Remove device from tree (requires: device_id)\n5) Rename Location (requires: location_id)\n6) Print location tree with devices (warning, slow!)\n7) Delete Location\n8) List My Devices\n9) Create Location\n10) Exit" );
+      print("\n\nMenu Options:\n1) Print Location Tree\n2) List Devices at Location (requires: location_id)\n3) Move device (requires: device_id, location_id)\n4) Remove device from tree (requires: device_id)\n5) Rename Location (requires: location_id, name)\n6) Print location tree with devices (slow! Not using alldevices option)\n7) Delete Location (requires: location_id) \n8) List My Devices\n9) Create Location (requires: parent_id, name, type, [lat], [lon]\n10) Exit" );
       menu_option = input(': ')
       if menu_option=='1':
          print_location_tree('',0,False) 
@@ -284,7 +284,7 @@ def main(argv):
       if menu_option=='8':
          print_myDevices() 
       if menu_option=='9':
-         loc_id=input("Enter patent location ID: " )
+         loc_id=input("Enter parent location ID: " )
          name=input('Enter new location name: ')
          building_type=input('Enter type [BUILDING or INDOOR]: ')
          gps_lat=input('Enter Latitude: ')
