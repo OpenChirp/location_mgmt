@@ -7,13 +7,13 @@ from pprint import pprint
 # Set these globals based on the command line tool parsing
 user = ''
 token = ''
-server_prefix = "http://openchirp.andrew.cmu.edu:7000"
+server_prefix = "https://api.openchirp.io"
 
 # This function deletes a location 
 #     loc_id is a string representing the location ID
 # This function will exit upon error
 def delete_location(loc_id):
-   url='http://openchirp.andrew.cmu.edu:7000/api/location/'+loc_id
+   url='https://api.openchirp.io/apiv1/location/'+loc_id
    global user
    global token
    check = input( "Are you sure you want to delete?  Type 'y' for yes: " )
@@ -33,7 +33,7 @@ def rename_location(loc_id,name):
    global user
    global token
    global server_prefix
-   url=server_prefix + '/api/location/'+loc_id
+   url=server_prefix + '/apiv1/location/'+loc_id
    data = {'name': name}
    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
    response = requests.put(url, data=json.dumps(data), headers=headers, auth=(user, token ))
@@ -49,7 +49,7 @@ def rename_location(loc_id,name):
 # This function will exit upon error
 def move_devices(dev_id,loc_id):
    global server_prefix
-   url=server_prefix + '/api/device/'+dev_id
+   url=server_prefix + '/apiv1/device/'+dev_id
    global user
    global token
    data = {'location_id': loc_id}
@@ -63,7 +63,7 @@ def move_devices(dev_id,loc_id):
 # This function prints the user's devices 
 def print_myDevices():
    global server_prefix
-   url=server_prefix + '/api/user/mydevices'
+   url=server_prefix + '/apiv1/user/mydevices'
    global user
    global token
    response = requests.get(url, auth=(user, token ))
@@ -91,7 +91,7 @@ def print_myDevices():
 # This function will exit upon error
 def print_devices(loc_id,depth):
    global server_prefix
-   url=server_prefix + '/api/location/'+loc_id+'/devices'
+   url=server_prefix + '/apiv1/location/'+loc_id+'/devices'
    global user
    global token
    response = requests.get(url, auth=(user, token ))
@@ -126,7 +126,7 @@ def print_devices(loc_id,depth):
 # This function will exit upon error
 def print_location_tree(loc_id,depth,device_flag):
    global server_prefix
-   url=server_prefix + '/api/location/'+loc_id
+   url=server_prefix + '/apiv1/location/'+loc_id
    global user
    global token
    response = requests.get(url, auth=(user, token ))
@@ -154,7 +154,7 @@ def create_location(loc_id,name,building_type,gps_lat, gps_lon):
    global user
    global token
    global server_prefix
-   url=server_prefix + '/api/location/'+loc_id
+   url=server_prefix + '/apiv1/location/'+loc_id
    if gps_lat=='' or gps_lon=='':
       data = {'name': name, 'type' : building_type}
    else:
